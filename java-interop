@@ -1,16 +1,111 @@
 ;; gorilla-repl.fileformat = 1
 
 ;; **
-;;; # Gorilla REPL
+;;; # Java Interop
 ;;; 
-;;; Welcome to gorilla :-)
+;;; This is a lesson in Java interop done interactively. This is a REPL. Cool 'eh?
 ;;; 
 ;;; Shift + enter evaluates code. Hit ctrl+g twice in quick succession or click the menu icon (upper-right corner) for more commands ...
 ;;; 
-;;; It's a good habit to run each worksheet in its own namespace: feel free to use the declaration we've provided below if you'd like.
 ;; **
 
 ;; @@
-(ns purring-canyon
+(ns java-interop
   (:require [gorilla-plot.core :as plot]))
+;; @@
+
+;; **
+;;; In your app you've already done some java interop. Still it won't hurt to go over some basics.
+;;; 
+;;; Let's start with what you already know. Strings in Clojure...
+;; **
+
+;; @@
+(class "I am a string")
+;; @@
+
+;; **
+;;; Are Java strings. This is why you don't see as much string manipulation in the standard library for Clojure, java already provides it.
+;; **
+
+;; @@
+(.toUpperCase "i am shouting")
+;; @@
+
+;; **
+;;; Of course you knew this already, it's in your code, but that's the same as new String("i am shouting").toUpperCase().
+;;; 
+;;; To call a method on a java object you use the . notation. To create a java object you
+;; **
+
+;; @@
+(.toUpperCase (String. "i am superfluous"))
+;; @@
+
+;; **
+;;; So it's create object with the period at the end, call a method with a period at the beginning. You can call statics.
+;; **
+
+;; @@
+(System/getProperties)
+;; @@
+
+;; **
+;;; Maps and arrays will return Java versions, but you can generally use them like their clojure equivalents. Things can get noisy so Clojure provides the .. macro.
+;; **
+
+;; @@
+(get (System/getProperties) "os.name")
+;; @@
+
+;; @@
+(.. System (getProperties) (get "os.name"))
+;; @@
+
+;; **
+;;; This is of course similar to the threding macro you are used to.
+;;; 
+;;; Naturally you won't always be able just use Java libraries. Sometimes you have to import them:
+;; **
+
+;; @@
+(import javax.swing.SwingUtilities)
+;; @@
+
+;; **
+;;; You can also use the ns macro with :import to do this, and most of the time you will.
+;;; 
+;; **
+
+;; @@
+(ns new-namespace
+  (:import [javax.swing SwingUtilities]))
+;; @@
+
+;; **
+;;; But sometimes you need to inherit from a class. You can create an anonymous class with proxy.
+;;;           
+;; **
+
+;; @@
+; new Runnable() {
+; public void run() {
+;   System.out.println("hullo");
+; }
+
+; Object is the anonymous classes superclass, Runnable is the interface it implements
+; The empty array is any parameters for the superclass
+(def a (proxy [Object Runnable] [] 
+         (run []
+              (prn "hullo"))))
+
+(.run a)
+;; @@
+
+;; **
+;;; There's a trick to those though, and we'll get to that in a bit....
+;; **
+
+;; @@
+
 ;; @@
